@@ -6,4 +6,4 @@ FROM Employee e1
 JOIN Employee e2
 ON e1.id = e2.managerID
 GROUP BY e2.managerId
-HAVING COUNT(e2.managerID) >=5
+ HAVING COUNT(e2.managerID) >=5
