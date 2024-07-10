@@ -1,23 +1,16 @@
 class Solution {
 public:
     int minOperations(vector<string>& logs) {
-        stack<string>stk;
-        for(int i=0;i<logs.size();i++)
-        {
-            if(logs[i]=="../")
-            {   
-                if(stk.empty()) continue;
-                else stk.pop();
-            }
-            else if(logs[i]=="./")
-            {
-                continue;
-            }
-            else
-            {
-                stk.push(logs[i]);
+        int depth = 0; // Track current directory depth
+
+        for (const string& log : logs) {
+            if (log == "../") {
+                depth = max(depth - 1, 0); // Avoid going below root directory
+            } else if (log != "./") {
+                depth++; // Increment depth for valid directory names
             }
         }
-        return stk.size();
+
+        return depth;
     }
 };
