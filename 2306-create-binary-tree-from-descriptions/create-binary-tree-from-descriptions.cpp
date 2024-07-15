@@ -1,41 +1,49 @@
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
 class Solution {
 public:
     TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
-        unordered_map<int,TreeNode*>tree;
-        set<int>p;
-        set<int>c;
-        for(auto& desc:descriptions)
-        {
-            p.insert(desc[0]);
-            c.insert(desc[1]);
-            if(tree.find(desc[0])==tree.end())
-                tree[desc[0]]=new TreeNode(desc[0]);
+        unordered_set<int> childrenSet;
+        unordered_map<int, pair<int, int>> childrenHashmap;
 
-            if(tree.find(desc[1])==tree.end())
-                tree[desc[1]]=new TreeNode(desc[1]);
+        for (auto& desc : descriptions) {
+            int parent = desc[0];
+            int child = desc[1];
+            bool isLeft = desc[2] == 1;
 
-            if(desc[2]==1)
-            {
-                tree[desc[0]]->left=tree[desc[1]];
+            if (childrenHashmap.find(parent) == childrenHashmap.end()) {
+                childrenHashmap[parent] = { -1, -1 };
             }
-            else
-                tree[desc[0]]->right=tree[desc[1]];
-        
-        }
-    vector<int>root;
-    set_difference(p.begin(), p.end(), c.begin(), c.end(), back_inserter(root));
 
-    return tree[root[0]];
+            childrenSet.insert(child);
+            if (isLeft) {
+                childrenHashmap[parent].first = child;
+            } else {
+                childrenHashmap[parent].second = child;
+            }
+        }
+
+        int headNodeVal;
+        for (auto& [parent, children] : childrenHashmap) {
+            if (childrenSet.find(parent) == childrenSet.end()) {
+                headNodeVal = parent;
+                break;
+            }
+        }
+
+        return constructTree(headNodeVal, childrenHashmap);
+    }
+
+private:
+    TreeNode* constructTree(int curNodeVal, unordered_map<int, pair<int, int>>& childrenHashmap) {
+        TreeNode* newNode = new TreeNode(curNodeVal);
+        if (childrenHashmap.find(curNodeVal) != childrenHashmap.end()) {
+            auto& children = childrenHashmap[curNodeVal];
+            if (children.first != -1) {
+                newNode->left = constructTree(children.first, childrenHashmap);
+            }
+            if (children.second != -1) {
+                newNode->right = constructTree(children.second, childrenHashmap);
+            }
+        }
+        return newNode;
     }
 };
