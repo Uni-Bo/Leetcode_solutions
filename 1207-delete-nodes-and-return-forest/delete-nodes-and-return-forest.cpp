@@ -1,57 +1,46 @@
 
-
 class Solution {
 public:
-    void mapNodes(TreeNode* root, unordered_map<int, TreeNode*>& nodes) {
-        if (!root) return;
-        nodes[root->val] = root;
-        mapNodes(root->left, nodes);
-        mapNodes(root->right, nodes);
-    }
-
     vector<TreeNode*> delNodes(TreeNode* root, vector<int>& to_delete) {
-        if (!root) return {};
+        unordered_map<int, TreeNode*> res;
+        unordered_set<int> to_delete_set(to_delete.begin(), to_delete.end());
+        res[root->val] = root;
 
-        unordered_map<int, TreeNode*> nodes;
-        unordered_set<TreeNode*> remainingRoots;
-        mapNodes(root, nodes);
-        remainingRoots.insert(root);
+        function<void(TreeNode*, TreeNode*, bool)> recursion = [&](TreeNode* parent, TreeNode* cur_node, bool isleft) {
+            if (cur_node == nullptr) return;
 
-        for (int val : to_delete) {
-            if (nodes.find(val) != nodes.end()) {
-                TreeNode* nodeToDelete = nodes[val];
-                
-                if (remainingRoots.find(nodeToDelete) != remainingRoots.end()) {
-                    remainingRoots.erase(nodeToDelete);
-                }
-                
-                if (nodeToDelete->left) {
-                    remainingRoots.insert(nodeToDelete->left);
-                }
-                if (nodeToDelete->right) {
-                    remainingRoots.insert(nodeToDelete->right);
+            recursion(cur_node, cur_node->left, true);
+            recursion(cur_node, cur_node->right, false);
+
+            if (to_delete_set.find(cur_node->val) != to_delete_set.end()) {
+                if (res.find(cur_node->val) != res.end()) {
+                    res.erase(cur_node->val);
                 }
 
-                // Disconnect the node from its parent
-                if (nodeToDelete == root) {
-                    root = nullptr;
-                } else {
-                    for (auto& pair : nodes) {
-                        if (pair.second->left == nodeToDelete) {
-                            pair.second->left = nullptr;
-                        }
-                        if (pair.second->right == nodeToDelete) {
-                            pair.second->right = nullptr;
-                        }
+                if (parent) {
+                    if (isleft) {
+                        parent->left = nullptr;
+                    } else {
+                        parent->right = nullptr;
                     }
                 }
-                
-                nodes.erase(val);
-                delete nodeToDelete;  // Ensure no further access to this node
-            }
-        }
 
-        vector<TreeNode*> result(remainingRoots.begin(), remainingRoots.end());
+                if (cur_node->left) {
+                    res[cur_node->left->val] = cur_node->left;
+                }
+                if (cur_node->right) {
+                    res[cur_node->right->val] = cur_node->right;
+                }
+            }
+        };
+
+        recursion(nullptr, root, false);
+        
+        vector<TreeNode*> result;
+        for (auto& pair : res) {
+            result.push_back(pair.second);
+        }
+        
         return result;
     }
 };
