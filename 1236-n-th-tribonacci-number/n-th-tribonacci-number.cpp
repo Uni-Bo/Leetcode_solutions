@@ -1,9 +1,9 @@
 class Solution {
 public:
     int tribonacci(int n) {
-        if(n==0)return 0;
-        if(n==1)return 1;
-        if(n==2)return 1;
+        if(n==0)return 0;//T0=0
+        if(n==1)return 1;//T1=1
+        if(n==2)return 1;//T2=1
         vector<int>dp(n+1);
         dp[0]=0;
         dp[1]=1;
