@@ -14,7 +14,7 @@ public:
             else if(c.second%3==2)
                 ans+=c.second/3+1;
             else if(c.second>6 && c.second%3==1)
-                ans+=c.second/3 +1;
+                ans+=c.second/3+1;
             else if(c.second%2==0)
                 ans+=c.second/2;
             else
