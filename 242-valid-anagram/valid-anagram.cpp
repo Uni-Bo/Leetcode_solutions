@@ -1,8 +1,8 @@
 class Solution {
 public:
     bool isAnagram(string s, string t) {
-        map<char,int>maps;
-        map<char,int>mapt;
+        unordered_map<char,int>maps;
+        unordered_map<char,int>mapt;
         for(auto sc:s){
             maps[sc]++;
         }
